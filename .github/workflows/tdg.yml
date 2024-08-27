@@ -1,0 +1,23 @@
+name: Create GitHub Issues on TODOs in comments
+on:
+    push:
+        branches:
+            - main
+jobs:
+  build:
+    permissions:
+        issues: write # https://stackoverflow.com/questions/70435286/resource-not-accessible-by-integration-on-github-post-repos-owner-repo-ac
+        contents: read # https://github.com/actions/checkout/issues/254
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Run tdg-github-action
+      uses: JakubKoralewski/tdg-github-action-no-docker@master
+      with:
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO: ${{ github.repository }}
+        SHA: ${{ github.sha }}
+        REF: ${{ github.ref }}
+        EXCLUDE_PATTERN: "(Cargo.lock$)|(web\\/(amplify|public).*$)|(.*-lock.json)|(\\.zip$)"
+        COMMENT_ON_ISSUES: true
+        MIN_CHARACTERS: 15
